@@ -5,9 +5,15 @@ int surprised = 10;
 int neutral = 9;
 
 void setup() {
+    pinMode(happy, OUTPUT);
+    pinMode(sad, OUTPUT);
+    pinMode(angry, OUTPUT);
+    pinMode(surprised, OUTPUT);
+    pinMode(neutral, OUTPUT);
 
+    Serial.begin(9600);
 }
 
 void loop(
-    
+
 )

@@ -1,5 +1,13 @@
 import cv2 as cv
 
+emotions = {
+    "happy": 'h',
+    "sad": 's',
+    "angry": 'a',
+    "surprised": 'p',
+    "neutral": 'n'
+}
+
 cam = cv.VideoCapture(0)
 
 frame_width = int(cam.get(cv.CAP_PROP_FRAME_WIDTH))
