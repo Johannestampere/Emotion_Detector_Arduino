@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import serial
-from tensorflow.keras.models import load_model
+from tensorflow.python.keras.models import load_model
 
 model = load_model('./face_model.h5')
 
@@ -47,3 +47,30 @@ def preprocess(frame):
 
     return input_frame
 
+def send_emotion(emotion):
+    arduino.write(emotion_to_char[emotion].encode())
+
+while True:
+    ret, frame = cam.read()
+    if not ret:
+        break
+
+    input_frame = preprocess(frame)
+
+    predictions = model.predict(input_frame)
+    emotion_index = np.argmax(predictions)
+    emotion = emotions[emotion_index]
+
+    send_emotion(emotion)
+
+    cv.putText(frame, f"Emotion: {emotion}", (10, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    cv.imshow('Camera', frame)
+
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cam.release()
+out.release()
+cv.destroyAllWindows()
+arduino.close()
