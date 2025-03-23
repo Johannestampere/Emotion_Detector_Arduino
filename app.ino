@@ -10,6 +10,8 @@ void setup() {
     pinMode(angry, OUTPUT);
     pinMode(surprised, OUTPUT);
     pinMode(neutral, OUTPUT);
+    pinMode(disgust, OUTPUT);
+    pinMode(fear, OUTPUT);
 
     Serial.begin(9600);
 }
@@ -23,6 +25,8 @@ void loop(
         digitalWrite(angry, LOW);
         digitalWrite(surprised, LOW);
         digitalWrite(neutral, LOW);
+        digitalWrite(disgust, LOW);
+        digitalWrite(fear, LOW);
 
         if (emotion == 'h') {
             digitalWrite(happy, HIGH);
@@ -34,8 +38,12 @@ void loop(
             digitalWrite(surprised, HIGH);
         } else if (emotion == 'n') {
             digitalWrite(neutral, HIGH);
+        } else if (emotion == 'd') {
+            digitalWrite(disgust, HIGH);
+        } else if (emotion == 'f') {
+            digitalWrite(fear, HIGH);
         } else {
-            break;
+            digitalWrite(neutral, HIGH);
         }
     }
 )

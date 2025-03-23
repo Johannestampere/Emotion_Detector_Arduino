@@ -1,9 +1,10 @@
 import cv2 as cv
 import numpy as np
 import serial
-from tensorflow.python.keras.models import load_model
+from tensorflow import keras
+from tensorflow.keras.models import load_model # type: ignore
 
-model = load_model('./face_model.h5')
+model = load_model('face_model.h5')
 
 emotions = {
     0: "Angry",
@@ -32,7 +33,7 @@ frame_height = int(cam.get(cv.CAP_PROP_FRAME_HEIGHT))
 fourcc = cv.VideoWriter_fourcc(*'mp4v')
 out = cv.VideoWriter('./videos/output.mp4', fourcc, 20.0, (frame_width, frame_height))
 
-arduino = serial.Serial('/dev/cu.usbmodem14101', 9600) # mac usb port and arduino port nr
+arduino = serial.Serial('/dev/cu.usbmodem14401', 9600) # mac usb port and arduino port nr
 
 def preprocess(frame):
     resized_frame = cv.resize(frame, (48, 48))
