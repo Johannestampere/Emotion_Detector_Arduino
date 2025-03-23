@@ -1,7 +1,7 @@
 int happy = 13;
 int sad = 12; 
 int angry = 11;
-int surprised = 10;
+int fear = 10;
 int neutral = 9;
 
 void setup() {
@@ -14,7 +14,7 @@ void setup() {
     Serial.begin(9600);
 }
 
-void loop(
+void loop() {
     if (Serial.available() > 0) {
         char emotion = Serial.read();
 
@@ -34,8 +34,10 @@ void loop(
             digitalWrite(fear, HIGH);
         } else if (emotion == 'n') {
             digitalWrite(neutral, HIGH);
+        } else if (emotion == '0') {
+          
         } else {
-            digitalWrite(neutral, HIGH);
+            Serial.println("unknown char");
         }
     }
-)
+}

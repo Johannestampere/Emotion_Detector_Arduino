@@ -5,9 +5,10 @@ arduino = serial.Serial('/dev/cu.usbmodem14401', 9600)
 time.sleep(2)
 
 
-test_emotions = ['h', 's', 'a', 'f', 'n']
+test_emotions = ['h', 's', 'a', 'f', 'n', '0']
 
 for char in test_emotions:
     print("Sending emotion " + char)
     arduino.write(char.encode())
     time.sleep(2)
+

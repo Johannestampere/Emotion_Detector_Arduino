@@ -1,20 +1,12 @@
 import cv2 as cv
 import numpy as np
 import serial
-from tensorflow import keras
-from tensorflow.keras.models import load_model # type: ignore
+from tensorflow.keras.models import load_model  # type: ignore
+from tensorflow.keras.preprocessing import image # type: ignore
 
-model = load_model('face_model.h5', compile=False)
+model = load_model('face_model.h5')
 
-emotions = {
-    0: "Angry",
-    1: "Disgust",
-    2: "Fear",
-    3: "Happy",
-    4: "Sad",
-    5: "Surprise",
-    6: "Neutral"
-}
+class_names = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
 emotion_to_char = {
     "Angry": 'a',
@@ -24,52 +16,43 @@ emotion_to_char = {
     "Neutral": 'n'
 }
 
+def send_emotion(emotion):
+    if arduino is not None and emotion in emotion_to_char:
+        arduino.write(emotion_to_char[emotion].encode())
+
 cam = cv.VideoCapture(0)
 
-frame_width = int(cam.get(cv.CAP_PROP_FRAME_WIDTH))
-frame_height = int(cam.get(cv.CAP_PROP_FRAME_HEIGHT))
-fourcc = cv.VideoWriter_fourcc(*'mp4v')
-out = cv.VideoWriter('./videos/output.mp4', fourcc, 20.0, (frame_width, frame_height))
-
-arduino = serial.Serial('/dev/cu.usbmodem14401', 9600) # mac usb c port and arduino port nr
-
-def preprocess(frame):
-    resized_frame = cv.resize(frame, (48, 48))
-
-    gray_frame = cv.cvtColor(resized_frame, cv.COLOR_BGR2GRAY)
-
-    normalized_frame = gray_frame / 255.0
-
-    input_frame = np.expand_dims(normalized_frame, axis=0) 
-    input_frame = np.expand_dims(input_frame, axis=-1) 
-
-
-    return input_frame
-
-def send_emotion(emotion):
-    arduino.write(emotion_to_char[emotion].encode())
+face_cascade = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 while True:
     ret, frame = cam.read()
-    if not ret:
-        break
+    arduino = serial.Serial('/dev/cu.usbmodem14401', 9600)  # Update with your port
 
-    input_frame = preprocess(frame)
+    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-    predictions = model.predict(input_frame)
-    emotion_index = np.argmax(predictions)
-    emotion = emotions[emotion_index]
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
 
-    send_emotion(emotion)
+    for (x, y, w, h) in faces:
+        face_roi = frame[y:y + h, x:x + w]
+        face_image = cv.resize(face_roi, (48, 48))
+        face_image = cv.cvtColor(face_image, cv.COLOR_BGR2GRAY)
+        face_image = image.img_to_array(face_image)
+        face_image = np.expand_dims(face_image, axis=0)
+        face_image = np.vstack([face_image])
 
-    cv.putText(frame, f"Emotion: {emotion}", (10, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        predictions = model.predict(face_image)
+        emotion_label = class_names[np.argmax(predictions)]
 
-    cv.imshow('Camera', frame)
+        send_emotion(emotion_label)
 
-    if cv.waitKey(1) & 0xFF == ord('q'):
-        break
+        cv.putText(frame, f'Emotion: {emotion_label}', (x, y - 10), cv.FONT_HERSHEY_SIMPLEX,
+                    0.9, (0, 0, 255), 2)
+        cv.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        cv.imshow('Emotion Detection', frame)
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            break
 
-cam.release()
-out.release()
-cv.destroyAllWindows()
-arduino.close()
+# happy - sinine
+# fear - oranz
+# angry - punane
+# neutral - valge
