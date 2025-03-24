@@ -11,16 +11,16 @@ void setup() {
     pinMode(fear, OUTPUT);
     pinMode(neutral, OUTPUT);
 
+    Serial.begin(9600);
+}
+
+void loop() {
     digitalWrite(happy, LOW);
     digitalWrite(sad, LOW);
     digitalWrite(angry, LOW);
     digitalWrite(fear, LOW);
     digitalWrite(neutral, LOW);
-
-    Serial.begin(9600);
-}
-
-void loop() {
+    
     if (Serial.available() > 0) {
         char emotion = Serial.read();
 

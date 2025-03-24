@@ -10,7 +10,7 @@ class_names = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutra
 
 emotion_to_char = {
     "Angry": 'a',
-    "Suprised": 'p',
+    "Surprise": 'p',
     "Happy": 'h',
     "Sad": 's',
     "Neutral": 'n'
