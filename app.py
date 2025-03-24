@@ -10,7 +10,7 @@ class_names = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutra
 
 emotion_to_char = {
     "Angry": 'a',
-    "Fear": 'f',
+    "Suprised": 'p',
     "Happy": 'h',
     "Sad": 's',
     "Neutral": 'n'
@@ -26,7 +26,7 @@ face_cascade = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalf
 
 while True:
     ret, frame = cam.read()
-    arduino = serial.Serial('/dev/cu.usbmodem14401', 9600)  # Update with your port
+    arduino = serial.Serial('/dev/cu.usbmodem14401', 9600)
 
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
@@ -50,9 +50,8 @@ while True:
         cv.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv.imshow('Emotion Detection', frame)
         if cv.waitKey(1) & 0xFF == ord('q'):
+            cam.release()
+            cv.destroyAllWindows()
+            arduino.close()
             break
-
-# happy - sinine
-# fear - oranz
-# angry - punane
-# neutral - valge
+    
